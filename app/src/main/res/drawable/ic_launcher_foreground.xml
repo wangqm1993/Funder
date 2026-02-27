@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer decorative ring -->
+    <path
+        android:pathData="M54,54m-28,0a28,28 0 1,1 56,0a28,28 0 1,1 -56,0"
+        android:strokeWidth="0.8"
+        android:strokeColor="#FFFFFF"
+        android:strokeAlpha="0.08"
+        android:fillColor="#00000000" />
+
+    <!-- Inner glow disc -->
+    <path
+        android:pathData="M54,54m-22,0a22,22 0 1,1 44,0a22,22 0 1,1 -44,0"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.03" />
+
+    <!-- F shadow (offset +1.5 Y for depth) -->
+    <path
+        android:pathData="M43,37.5 L59,37.5 A3,3 0 0,1 62,40.5 L62,42.5 A3,3 0 0,1 59,45.5 L48,45.5 L48,53.5 L55,53.5 A3,3 0 0,1 58,56.5 L58,57.5 A3,3 0 0,1 55,60.5 L48,60.5 L48,69.5 A3,3 0 0,1 45,72.5 L43,72.5 A3,3 0 0,1 40,69.5 L40,40.5 A3,3 0 0,1 43,37.5 Z"
+        android:fillColor="#000000"
+        android:fillAlpha="0.15" />
+
+    <!-- Filled F shape with vertical gradient (white → blue-white) -->
+    <path
+        android:pathData="M43,36 L59,36 A3,3 0 0,1 62,39 L62,41 A3,3 0 0,1 59,44 L48,44 L48,52 L55,52 A3,3 0 0,1 58,55 L58,56 A3,3 0 0,1 55,59 L48,59 L48,68 A3,3 0 0,1 45,71 L43,71 A3,3 0 0,1 40,68 L40,39 A3,3 0 0,1 43,36 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="50"
+                android:startY="34"
+                android:endX="50"
+                android:endY="73"
+                android:startColor="#FFFFFF"
+                android:endColor="#D0DAE8" />
+        </aapt:attr>
+    </path>
+
+    <!-- F top highlight overlay (subtle shimmer) -->
+    <path
+        android:pathData="M43,36 L59,36 A3,3 0 0,1 62,39 L62,41 A3,3 0 0,1 59,44 L48,44 L48,52 L55,52 A3,3 0 0,1 58,55 L58,56 A3,3 0 0,1 55,59 L48,59 L48,68 A3,3 0 0,1 45,71 L43,71 A3,3 0 0,1 40,68 L40,39 A3,3 0 0,1 43,36 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="50"
+                android:startY="34"
+                android:endX="50"
+                android:endY="52"
+                android:startColor="#18FFFFFF"
+                android:endColor="#00FFFFFF" />
+        </aapt:attr>
+    </path>
+
+    <!-- Gold rising accent (curved, from F top) -->
+    <path
+        android:pathData="M60,41 Q65,35 68,31"
+        android:strokeWidth="3.8"
+        android:strokeColor="#FFCA28"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+    <!-- Arrow head -->
+    <path
+        android:pathData="M64,35 L68,31 L64,31"
+        android:strokeWidth="2.8"
+        android:strokeColor="#FFD54F"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+
+    <!-- Glow dot at arrow tip -->
+    <path
+        android:pathData="M68,31m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0"
+        android:fillColor="#FFD54F"
+        android:fillAlpha="0.5" />
+
+    <!-- Decorative growth arc -->
+    <path
+        android:pathData="M32,78 Q46,72 54,64 Q62,56 72,46"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FFCA28"
+        android:strokeAlpha="0.25"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+    <!-- Secondary arc (depth layer) -->
+    <path
+        android:pathData="M34,82 Q48,76 56,68 Q64,60 74,50"
+        android:strokeWidth="1.2"
+        android:strokeColor="#FFFFFF"
+        android:strokeAlpha="0.06"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+</vector>
