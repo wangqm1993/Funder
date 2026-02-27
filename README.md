@@ -4,6 +4,12 @@
 
 [![Download APK](https://img.shields.io/github/v/release/wangqm1993/Funder?label=下载%20APK&logo=android&color=34a853)](https://github.com/wangqm1993/Funder/releases/latest)
 
+<p align="center">
+  <img src="screenshots/download_qr.png" width="200" alt="扫码下载 APK" />
+  <br/>
+  <sub>扫码直接下载 APK 安装包</sub>
+</p>
+
 ## 功能特性
 
 ### 持仓管理
