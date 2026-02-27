@@ -225,6 +225,24 @@ cd Funder
 |:---:|:---:|:---:|
 | ![导入](screenshots/10_import.jpg) | ![资讯](screenshots/11_news.jpg) | ![设置](screenshots/12_settings.jpg) |
 
+## 请作者喝杯咖啡 ☕
+
+> 独立开发不易，从第一行代码到最终上线，无数个深夜与 bug 为伴。
+>
+> 如果这个项目对你有帮助，或者你觉得它还不错，不妨请作者喝杯咖啡，你的支持是我持续维护的最大动力。
+>
+> 每一份打赏，都让这个项目离「更好」更近一步。感谢每一位愿意驻足的你 🙏
+
+<p align="center">
+  <img src="screenshots/donate_wechat.png" width="300" alt="微信赞赏" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="screenshots/donate_alipay.png" width="300" alt="支付宝赞赏" />
+</p>
+
+<p align="center">
+  <sub>微信支付 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 支付宝</sub>
+</p>
+
 ## License
 
 本项目仅用于个人学习和使用，数据接口来源于公开的第三方服务。
