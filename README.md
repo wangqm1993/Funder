@@ -2,6 +2,8 @@
 
 一款基于 Android 平台的基金持仓管理与实时估值应用，支持 OCR 截图识别导入、实时估值追踪、财经资讯浏览等功能。采用 Material Design 3 设计语言，支持浅色/暗黑主题切换。
 
+[![Download APK](https://img.shields.io/github/v/release/wangqm1993/Funder?label=下载%20APK&logo=android&color=34a853)](https://github.com/wangqm1993/Funder/releases/latest)
+
 ## 功能特性
 
 ### 持仓管理
