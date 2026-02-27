@@ -260,6 +260,9 @@ fun HomeScreen(
                         }
                     }
 
+                    val anyDragActive = dragDropState.currentIndexOfDraggedItem != null ||
+                        dragDropState.settlingItemIndex != null
+
                     itemsIndexed(
                         items = holdingsList,
                         key = { _, item -> item.holding.fundCode }
@@ -274,7 +277,8 @@ fun HomeScreen(
                             modifier = Modifier
                                 .then(
                                     when {
-                                        isDragging || isSettling -> Modifier
+                                        // 拖动或结算动画进行中，所有 item 均禁用 animateItem，避免重复动画
+                                        anyDragActive -> Modifier
                                         else -> Modifier.animateItem(
                                             fadeInSpec = null,
                                             fadeOutSpec = null

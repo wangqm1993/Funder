@@ -54,6 +54,9 @@ class FundRepository @Inject constructor(
     suspend fun getNavHistory(fundCode: String, page: Int = 1, perPage: Int = 20): List<NavHistoryItem> =
         apiService.getNavHistory(fundCode, page, perPage)
 
+    suspend fun getLatestNavDate(fundCode: String): String? =
+        apiService.getNavHistory(fundCode, page = 1, perPage = 1).firstOrNull()?.date
+
     suspend fun getStockPrices(codes: List<String>): Map<String, Pair<String, String>> =
         apiService.getStockPrices(codes)
 

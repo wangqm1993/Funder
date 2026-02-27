@@ -79,29 +79,28 @@ class NavSettlementWorker @AssistedInject constructor(
 
             if (valuations.isEmpty()) return Result.retry()
 
-            val settledFunds = valuations.values.filter { it.navDate == todayStr }
-
-            if (settledFunds.isEmpty()) {
-                return Result.retry()
+            val settledCodes = mutableSetOf<String>()
+            for (code in codes) {
+                val latestDate = apiService.getNavHistory(code, page = 1, perPage = 1)
+                    .firstOrNull()?.date
+                if (latestDate == todayStr) settledCodes.add(code)
             }
 
-            val settledRatio = settledFunds.size.toFloat() / valuations.size
-            if (settledRatio < 0.5f) {
-                return Result.retry()
-            }
+            if (settledCodes.isEmpty()) return Result.retry()
+            if (settledCodes.size < codes.size) return Result.retry()
 
             var totalDayProfit = 0.0
             val details = mutableListOf<String>()
 
             for (holding in holdings) {
+                if (holding.fundCode !in settledCodes) continue
                 val valuation = valuations[holding.fundCode] ?: continue
-                if (valuation.navDate != todayStr) continue
 
-                val currentNav = valuation.nav.toDoubleOrNull() ?: continue
-                val growthRate = valuation.estimatedGrowth.toDoubleOrNull() ?: continue
+                val navHistory = apiService.getNavHistory(holding.fundCode, page = 1, perPage = 2)
+                val todayNav = navHistory.firstOrNull()?.nav ?: continue
+                val yesterdayNav = navHistory.getOrNull(1)?.nav ?: continue
 
-                val yesterdayNav = currentNav / (1 + growthRate / 100)
-                val profit = holding.shares * (currentNav - yesterdayNav)
+                val profit = holding.shares * (todayNav - yesterdayNav)
                 totalDayProfit += profit
 
                 val name = holding.fundName.ifEmpty { valuation.name.ifEmpty { holding.fundCode } }
@@ -110,7 +109,7 @@ class NavSettlementWorker @AssistedInject constructor(
             }
 
             settingsRepository.setLastSettlementNotifiedDate(todayStr)
-            sendNotification(totalDayProfit, details, settledFunds.size)
+            sendNotification(totalDayProfit, details, settledCodes.size)
 
             return Result.success()
         } catch (e: Exception) {

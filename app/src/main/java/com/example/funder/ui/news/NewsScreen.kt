@@ -161,10 +161,10 @@ private fun NewsItem(
     )
 
     Card(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .graphicsLayer { this.alpha = alpha }
-            .clickable(onClick = onClick),
+            .graphicsLayer { this.alpha = alpha },
         shape = cardShape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)

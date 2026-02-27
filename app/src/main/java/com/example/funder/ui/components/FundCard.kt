@@ -112,8 +112,8 @@ fun FundCardContent(
         label = "profitColor"
     )
 
-    var visible by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { visible = true }
+    var visible by remember(item.holding.fundCode) { mutableStateOf(false) }
+    LaunchedEffect(item.holding.fundCode) { visible = true }
 
     val slideOffset by animateDpAsState(
         targetValue = if (visible) 0.dp else 50.dp,
@@ -189,7 +189,7 @@ fun FundCardContent(
                                 fontSize = 12.sp
                             )
                             Text(
-                                text = "净值 ${item.valuation?.estimatedNav ?: "--"}",
+                                text = "净值 ${"%.4f".format(item.displayNav).takeIf { item.displayNav > 0 } ?: "--"}",
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontWeight = FontWeight.Medium, fontSize = 12.sp
                                 ),
@@ -304,8 +304,7 @@ fun FundCardContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(3.dp))
-                        val currentValue = (item.valuation?.estimatedNav?.toDoubleOrNull()
-                            ?: item.valuation?.nav?.toDoubleOrNull() ?: 0.0) * item.holding.shares
+                        val currentValue = item.estimatedValue
                         Text(
                             text = "¥${formatMoney(currentValue)}",
                             style = MaterialTheme.typography.titleMedium.copy(
@@ -315,6 +314,17 @@ fun FundCardContent(
                             ),
                             color = MaterialTheme.colorScheme.onSurface
                         )
+                        if (item.isSettled) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "✓ 净值已更新",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                color = SuccessGreen
+                            )
+                        }
                     }
                 }
             }
