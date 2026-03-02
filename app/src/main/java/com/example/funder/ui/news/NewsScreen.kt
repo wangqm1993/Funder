@@ -1,5 +1,6 @@
 package com.example.funder.ui.news
 
+import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +20,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -152,19 +154,19 @@ private fun NewsItem(
 ) {
     val isDark = LocalIsDarkTheme.current
 
-    var visible by remember { mutableStateOf(false) }
+    var visible by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
-    val alpha by animateFloatAsState(
-        targetValue = if (visible) 1f else 0f,
-        animationSpec = tween(350),
-        label = "alpha"
+    val slideOffset by animateDpAsState(
+        targetValue = if (visible) 0.dp else 20.dp,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
+        label = "slide"
     )
 
     Card(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .graphicsLayer { this.alpha = alpha },
+            .graphicsLayer { translationX = slideOffset.toPx() },
         shape = cardShape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)

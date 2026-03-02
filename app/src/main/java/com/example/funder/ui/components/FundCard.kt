@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -101,32 +102,29 @@ fun FundCardContent(
 ) {
     val growthRate = item.growthRate
     val isDark = LocalIsDarkTheme.current
-    val neutralColor = if (isDark) Neutral else Neutral.copy(alpha = 0.8f)
+    // 浅色模式下使用对比度更高的替代色
+    val neutralColor = if (isDark) Neutral else TextSecondary
+    val lossColor = if (isDark) LossGreen else LossGreenOnLight
     val profitColor by animateColorAsState(
         targetValue = when {
             growthRate > 0.001 -> ProfitRed
-            growthRate < -0.001 -> LossGreen
+            growthRate < -0.001 -> lossColor
             else -> neutralColor
         },
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "profitColor"
     )
 
-    var visible by remember(item.holding.fundCode) { mutableStateOf(false) }
-    LaunchedEffect(item.holding.fundCode) { visible = true }
+    var visible by rememberSaveable(key = item.holding.fundCode) { mutableStateOf(false) }
+    LaunchedEffect(Unit) { visible = true }
 
     val slideOffset by animateDpAsState(
-        targetValue = if (visible) 0.dp else 50.dp,
+        targetValue = if (visible) 0.dp else 30.dp,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
         ),
         label = "slide"
-    )
-    val alpha by animateFloatAsState(
-        targetValue = if (visible) 1f else 0f,
-        animationSpec = tween(400),
-        label = "alpha"
     )
 
     val accentColor = when {
@@ -140,7 +138,6 @@ fun FundCardContent(
             .fillMaxWidth()
             .graphicsLayer {
                 translationX = slideOffset.toPx()
-                this.alpha = alpha
             }
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         shape = cardShape,
@@ -202,7 +199,7 @@ fun FundCardContent(
                                         .clip(RoundedCornerShape(4.dp))
                                         .background(
                                             if (isDark) SuccessGreen.copy(alpha = 0.2f)
-                                            else SuccessGreen.copy(alpha = 0.12f)
+                                            else SuccessGreenOnLight.copy(alpha = 0.12f)
                                         )
                                         .padding(horizontal = 5.dp, vertical = 1.dp)
                                 ) {
@@ -211,7 +208,7 @@ fun FundCardContent(
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             fontWeight = FontWeight.SemiBold, fontSize = 9.sp
                                         ),
-                                        color = SuccessGreen
+                                        color = if (isDark) SuccessGreen else SuccessGreenOnLight
                                     )
                                 }
                             }
@@ -322,7 +319,7 @@ fun FundCardContent(
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Medium
                                 ),
-                                color = SuccessGreen
+                                color = if (isDark) SuccessGreen else SuccessGreenOnLight
                             )
                         }
                     }

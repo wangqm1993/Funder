@@ -49,6 +49,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
+            android:configChanges="uiMode|orientation|screenSize|screenLayout|keyboardHidden|keyboard"
             android:theme="@style/Theme.Funder" />
     </application>
 </manifest>

@@ -78,7 +78,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.funder.ui.theme.LocalIsDarkTheme
 import com.example.funder.ui.theme.SuccessGreen
+import com.example.funder.ui.theme.SuccessGreenOnLight
 import com.example.funder.ui.theme.cardShape
 import kotlinx.coroutines.launch
 import java.io.File
@@ -463,6 +465,9 @@ private fun ImportFundItemCard(
     onCostChanged: (String) -> Unit,
     onFundCodeChanged: (String) -> Unit
 ) {
+    val isDark = LocalIsDarkTheme.current
+    val successColor = if (isDark) SuccessGreen else SuccessGreenOnLight
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = cardShape,
@@ -482,7 +487,7 @@ private fun ImportFundItemCard(
                         imageVector = if (item.isSelected) Icons.Default.CheckCircle
                         else Icons.Default.RadioButtonUnchecked,
                         contentDescription = if (item.isSelected) "已选中" else "未选中",
-                        tint = if (item.isSelected) SuccessGreen
+                        tint = if (item.isSelected) successColor
                         else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -508,7 +513,7 @@ private fun ImportFundItemCard(
                     Text(
                         text = "已验证",
                         style = MaterialTheme.typography.bodySmall,
-                        color = SuccessGreen
+                        color = successColor
                     )
                 } else if (item.displayFundCode.startsWith("SEARCH_")) {
                     Text(

@@ -76,6 +76,7 @@ fun HomeScreen(
     onNavigateToSearch: () -> Unit,
     onNavigateToImport: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
+    onRefreshMarketIndices: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -84,7 +85,10 @@ fun HomeScreen(
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.isRefreshing,
-        onRefresh = { viewModel.refresh() }
+        onRefresh = {
+            viewModel.refresh()
+            onRefreshMarketIndices()
+        }
     )
 
     Scaffold(
@@ -146,7 +150,7 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .pullRefresh(pullRefreshState)
         ) {
-            if (uiState.isLoading && uiState.holdings.isEmpty()) {
+        if (uiState.isLoading && uiState.holdings.isEmpty()) {
                 // 骨架屏加载动画
                 LazyColumn(
                     modifier = Modifier

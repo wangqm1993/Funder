@@ -21,6 +21,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -48,10 +49,8 @@ fun SummaryCard(
     modifier: Modifier = Modifier
 ) {
     // 进入动画
-    var visible by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        visible = true
-    }
+    var visible by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) { visible = true }
 
     val scale by animateFloatAsState(
         targetValue = if (visible) 1f else 0.8f,

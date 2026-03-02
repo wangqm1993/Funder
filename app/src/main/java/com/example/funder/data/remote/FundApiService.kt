@@ -9,6 +9,17 @@ import okhttp3.Request
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** 大盘/全球指数快照 */
+data class MarketIndexDto(
+    val code: String,
+    val name: String,
+    val price: Double,
+    val change: Double,        // 涨跌额
+    val changePercent: Double  // 涨跌幅（%，正=涨）
+) {
+    val isUp: Boolean get() = changePercent >= 0
+}
+
 @Singleton
 class FundApiService @Inject constructor(
     private val client: OkHttpClient,
@@ -21,6 +32,33 @@ class FundApiService @Inject constructor(
         private const val NAV_HISTORY_URL = "http://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&code=%s&page=%d&sdate=&edate=&per=%d"
         // 新浪财经滚动新闻 API（lid=2516 是财经频道）
         private const val NEWS_URL = "https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2516&num=%d&page=%d"
+        // 新浪财经行情 API 指数代码列表（顺序 = 展示顺序）
+        // A股: sh/sz 前缀；全球: gb_ 前缀；港股: hk 前缀
+        val SINA_INDEX_LIST: List<Pair<String, String>> = listOf(
+            // 国内
+            "sh000001" to "上证指数",
+            "sz399001" to "深证成指",
+            "sz399006" to "创业板指",
+            "sh000300" to "沪深300",
+            "sh000688" to "科创50",
+            // 美股
+            "gb_ixic"  to "纳斯达克",
+            "gb_dji"   to "道琼斯",
+            "gb_inx"   to "标普500",
+            // 亚太
+            "gb_hsi"   to "恒生指数",
+            "gb_n225"  to "日经225",
+            "gb_ks11"  to "韩国综合",
+            "gb_twii"  to "台湾加权",
+            "gb_aord"  to "澳全股指",
+            // 欧洲
+            "gb_ftse"  to "英富时100",
+            "gb_gdaxi" to "德国DAX",
+            "gb_fchi"  to "法国CAC40",
+            "gb_sx5e"  to "欧斯托50",
+            // 其他
+            "gb_sti"   to "新加坡STI"
+        )
     }
 
     /**
@@ -627,5 +665,53 @@ class FundApiService @Inject constructor(
             baseInfo.contains("FOF") -> "FOF"
             else -> "基金"
         }
+    }
+
+    /**
+     * 获取大盘/全球主要指数行情，使用新浪财经行情 API。
+     * - A股指数（sh/sz）：字段顺序为 名称,开盘,昨收,现价,最高,最低,...
+     * - 全球指数（gb_）：字段顺序为 名称,现价,昨收,涨跌幅%,涨跌额,...
+     */
+    suspend fun getMarketIndices(): List<MarketIndexDto> = withContext(Dispatchers.IO) {
+        val indexList = SINA_INDEX_LIST
+        val codesParam = indexList.joinToString(",") { it.first }
+        val result = mutableListOf<MarketIndexDto>()
+        try {
+            val url = "https://hq.sinajs.cn/list=$codesParam"
+            val request = Request.Builder().url(url)
+                .header("Referer", "https://finance.sina.com.cn/")
+                .header("User-Agent", "Mozilla/5.0")
+                .build()
+            val response = client.newCall(request).execute()
+            val body = response.body?.string() ?: return@withContext result
+            // 每行格式：var hq_str_sh000001="字段1,字段2,...";
+            val lineRegex = Regex("""hq_str_(\w+)="([^"]*)"""")
+            val dataMap = lineRegex.findAll(body).associate { mr ->
+                mr.groupValues[1] to mr.groupValues[2].split(",")
+            }
+            for ((sinaCode, displayName) in indexList) {
+                val fields = dataMap[sinaCode] ?: continue
+                if (fields.size < 4 || fields[0].isBlank()) continue
+                val dto = if (sinaCode.startsWith("gb_") || sinaCode.startsWith("hk")) {
+                    // 全球指数：[1]=现价 [2]=昨收 [3]=涨跌幅% [4]=涨跌额
+                    val price = fields.getOrNull(1)?.toDoubleOrNull() ?: continue
+                    val prevClose = fields.getOrNull(2)?.toDoubleOrNull() ?: 0.0
+                    val pct = fields.getOrNull(3)?.toDoubleOrNull() ?: 0.0
+                    val chg = fields.getOrNull(4)?.toDoubleOrNull() ?: (price - prevClose)
+                    MarketIndexDto(sinaCode, displayName, price, chg, pct)
+                } else {
+                    // A股指数：[1]=开盘 [2]=昨收 [3]=现价 [4]=最高 [5]=最低
+                    val price = fields.getOrNull(3)?.toDoubleOrNull() ?: continue
+                    val prevClose = fields.getOrNull(2)?.toDoubleOrNull() ?: 0.0
+                    val chg = price - prevClose
+                    val pct = if (prevClose > 0) chg / prevClose * 100 else 0.0
+                    MarketIndexDto(sinaCode, displayName, price, chg, pct)
+                }
+                result.add(dto)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        result
     }
 }

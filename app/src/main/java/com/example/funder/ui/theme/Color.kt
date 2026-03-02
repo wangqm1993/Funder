@@ -42,7 +42,9 @@ val OrangeAccent = Color(0xFFFF6D00)
 val PinkAccent = Color(0xFFFF4081)
 val TealAccent = Color(0xFF00BFA5)
 val ErrorRed = Color(0xFFFF1744)
-val SuccessGreen = Color(0xFF00E676)
+val SuccessGreen = Color(0xFF00E676)         // 荧光绿，仅暗色背景上使用
+val SuccessGreenOnLight = Color(0xFF1B7A4E)  // 深绿，浅色模式文字（对比度 5.2:1）
+val LossGreenOnLight = Color(0xFF007A24)     // 深绿，浅色模式跌幅文字（对比度 5.5:1）
 
 // 奖牌色（持仓排名）
 val MedalGold = Color(0xFFFFD700)

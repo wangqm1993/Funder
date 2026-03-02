@@ -212,10 +212,11 @@ private fun ValuationTab(state: DetailUiState) {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
                         ) {
+                            val lossAccent = if (isDark) LossGreen else LossGreenOnLight
                             Icon(
                                 imageVector = if (isPositive) Icons.Default.TrendingUp else Icons.Default.TrendingDown,
                                 contentDescription = if (isPositive) "上涨" else "下跌",
-                                tint = if (isPositive) ProfitRed else LossGreen,
+                                tint = if (isPositive) ProfitRed else lossAccent,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(Modifier.width(5.dp))
@@ -223,7 +224,7 @@ private fun ValuationTab(state: DetailUiState) {
                                 "${if (isPositive) "+" else ""}$growth",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = if (isPositive) ProfitRed else LossGreen,
+                                color = if (isPositive) ProfitRed else lossAccent,
                                 letterSpacing = 0.sp
                             )
                         }
@@ -1075,7 +1076,7 @@ private fun PerformanceItem(label: String, growth: String, modifier: Modifier = 
     val isDark = LocalIsDarkTheme.current
     val color = when {
         value != null && value > 0 -> ProfitRed
-        value != null && value < 0 -> LossGreen
+        value != null && value < 0 -> if (isDark) LossGreen else LossGreenOnLight
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
@@ -1253,7 +1254,7 @@ private fun RankItem(label: String, growth: String, rank: String) {
     val isDark = LocalIsDarkTheme.current
     val color = when {
         value != null && value > 0 -> ProfitRed
-        value != null && value < 0 -> LossGreen
+        value != null && value < 0 -> if (isDark) LossGreen else LossGreenOnLight
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
     val bgColor = when {

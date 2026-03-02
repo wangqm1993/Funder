@@ -6,6 +6,7 @@ import com.example.funder.data.remote.FundApiService
 import com.example.funder.data.remote.FundDetailDto
 import com.example.funder.data.remote.FundSearchResultDto
 import com.example.funder.data.remote.FundValuationDto
+import com.example.funder.data.remote.MarketIndexDto
 import com.example.funder.data.remote.NavHistoryItem
 import com.example.funder.data.remote.NewsDto
 import com.example.funder.data.remote.StockHolding
@@ -75,4 +76,9 @@ class FundRepository @Inject constructor(
 
     suspend fun getNews(page: Int = 1, pageSize: Int = 20): List<NewsDto> =
         apiService.getNews(page, pageSize)
+
+    // ---- 大盘指数 ----
+
+    suspend fun getMarketIndices(): List<MarketIndexDto> =
+        apiService.getMarketIndices()
 }

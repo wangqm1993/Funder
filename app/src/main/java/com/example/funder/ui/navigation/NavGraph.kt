@@ -57,8 +57,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.funder.ui.detail.FundDetailScreen
 import com.example.funder.ui.home.HomeScreen
+import com.example.funder.ui.home.MarketIndexBar
+import com.example.funder.ui.home.MarketIndexViewModel
 import com.example.funder.ui.import_fund.ImportScreen
 import com.example.funder.ui.news.NewsScreen
 import com.example.funder.ui.news.NewsDetailScreen
@@ -106,15 +110,18 @@ fun FunderNavGraph() {
 
     val showBottomBar = currentRoute in bottomNavRoutes && !showSearch
 
+    // 独立 ViewModel，NavGraph 级别作用域，所有 Tab 共享
+    val marketIndexViewModel: MarketIndexViewModel = hiltViewModel()
+    val marketIndices by marketIndexViewModel.indices.collectAsStateWithLifecycle()
+
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         bottomBar = {
             if (showBottomBar) {
                 Column {
-                    HorizontalDivider(
-                        thickness = 0.5.dp,
-                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
-                    )
+                    // 大盘指数条：位于导航栏正上方
+                    MarketIndexBar(indices = marketIndices)
+
                     NavigationBar(
                         modifier = Modifier
                             .navigationBarsPadding()
@@ -208,7 +215,8 @@ fun FunderNavGraph() {
                     },
                     onNavigateToDetail = { fundCode ->
                         navController.navigate("detail/$fundCode")
-                    }
+                    },
+                    onRefreshMarketIndices = { marketIndexViewModel.refresh() }
                 )
             }
             composable(
