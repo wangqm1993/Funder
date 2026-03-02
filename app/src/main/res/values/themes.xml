@@ -11,8 +11,11 @@
     </style>
     
     <!-- 主题 -->
+    <!-- forceDarkAllowed=false：禁止 Android/MIUI Force Dark 自动颜色反转，
+         Compose 自己处理亮/暗色方案，避免切换时文字与背景同色 -->
     <style name="Theme.Funder" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 </resources>

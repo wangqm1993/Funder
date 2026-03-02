@@ -13,9 +13,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.DarkMode
@@ -25,6 +30,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SettingsBrightness
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -49,8 +55,31 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     var showIntervalSheet by remember { mutableStateOf(false) }
     var showThemeSheet by remember { mutableStateOf(false) }
+
+    // 监听备份状态，Toast 提示
+    LaunchedEffect(state.backupStatus) {
+        when (val s = state.backupStatus) {
+            is BackupStatus.Success -> {
+                Toast.makeText(context, s.message, Toast.LENGTH_LONG).show()
+                viewModel.clearBackupStatus()
+            }
+            is BackupStatus.Error -> {
+                Toast.makeText(context, s.message, Toast.LENGTH_LONG).show()
+                viewModel.clearBackupStatus()
+            }
+            else -> Unit
+        }
+    }
+
+    // 导入文件选择器
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { viewModel.importHoldings(it, context) }
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
@@ -263,6 +292,51 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(24.dp))
 
+            // 数据备份
+            SectionHeader("数据备份")
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = cardShape,
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Column {
+                    SettingsItem(
+                        icon = Icons.Default.FileUpload,
+                        title = "导出持仓数据",
+                        subtitle = "将持仓导出为 JSON 文件，可分享或保存到本地",
+                        onClick = {
+                            if (state.backupStatus !is BackupStatus.Working) {
+                                viewModel.exportHoldings(context)
+                            }
+                        },
+                        showDivider = true,
+                        trailing = if (state.backupStatus is BackupStatus.Working) {
+                            { CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp) }
+                        } else null
+                    )
+                    SettingsItem(
+                        icon = Icons.Default.FileDownload,
+                        title = "导入持仓数据",
+                        subtitle = "从备份的 JSON 文件恢复持仓（已存在的不会重复添加）",
+                        onClick = {
+                            if (state.backupStatus !is BackupStatus.Working) {
+                                importLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
+                            }
+                        },
+                        showDivider = false,
+                        trailing = if (state.backupStatus is BackupStatus.Working) {
+                            { CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp) }
+                        } else null
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
             // 关于部分
             SectionHeader("关于")
             
@@ -354,7 +428,8 @@ private fun SettingsItem(
     title: String,
     subtitle: String,
     onClick: () -> Unit,
-    showDivider: Boolean = false
+    showDivider: Boolean = false,
+    trailing: (@Composable () -> Unit)? = null
 ) {
     var isPressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
@@ -423,12 +498,16 @@ private fun SettingsItem(
                     )
                 }
 
-                Icon(
-                    imageVector = Icons.Default.ChevronRight,
-                    contentDescription = "展开",
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (trailing != null) {
+                    trailing()
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = "展开",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
         

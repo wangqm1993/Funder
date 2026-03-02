@@ -372,11 +372,12 @@ private fun ValuationTab(state: DetailUiState) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
+                        val lossText = if (LocalIsDarkTheme.current) LossGreen else LossGreenOnLight
                         val todayVal = state.todayProfit
                         val todayStr = todayVal?.let { "%.2f".format(it) } ?: "--"
                         val todayColor = when {
                             todayVal != null && todayVal > 0 -> ProfitRed
-                            todayVal != null && todayVal < 0 -> LossGreen
+                            todayVal != null && todayVal < 0 -> lossText
                             else -> MaterialTheme.colorScheme.onSurface
                         }
                         val todayDisplay = if (todayVal != null) {
@@ -387,7 +388,7 @@ private fun ValuationTab(state: DetailUiState) {
                         val totalStr = totalVal?.let { "%.2f".format(it) } ?: "--"
                         val totalColor = when {
                             totalVal != null && totalVal > 0 -> ProfitRed
-                            totalVal != null && totalVal < 0 -> LossGreen
+                            totalVal != null && totalVal < 0 -> lossText
                             else -> MaterialTheme.colorScheme.onSurface
                         }
                         val totalDisplay = if (totalVal != null) {
@@ -598,10 +599,11 @@ private fun StockRow(
     index: Int,
     onClick: () -> Unit
 ) {
+    val isDark = LocalIsDarkTheme.current
     val changeVal = stock.change.toDoubleOrNull()
     val changeColor = when {
         changeVal != null && changeVal > 0 -> ProfitRed
-        changeVal != null && changeVal < 0 -> LossGreen
+        changeVal != null && changeVal < 0 -> if (isDark) LossGreen else LossGreenOnLight
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
@@ -827,11 +829,12 @@ private fun NavHistoryTab(state: DetailUiState) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant, letterSpacing = 0.sp)
                     }
 
+                    val histLossColor = if (LocalIsDarkTheme.current) LossGreen else LossGreenOnLight
                     history.forEachIndexed { index, item ->
                         val growthVal = item.growthRate.replace("%", "").toDoubleOrNull()
                         val growthColor = when {
                             growthVal != null && growthVal > 0 -> ProfitRed
-                            growthVal != null && growthVal < 0 -> LossGreen
+                            growthVal != null && growthVal < 0 -> histLossColor
                             else -> MaterialTheme.colorScheme.onSurfaceVariant
                         }
                         val rowBg = if (index % 2 != 0)
@@ -1016,10 +1019,11 @@ private fun HighlightReturnCard(
     growth: String,
     modifier: Modifier = Modifier
 ) {
+    val isDark = LocalIsDarkTheme.current
     val value = growth.toDoubleOrNull()
     val color = when {
         value != null && value > 0 -> ProfitRed
-        value != null && value < 0 -> LossGreen
+        value != null && value < 0 -> if (isDark) LossGreen else LossGreenOnLight
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
     val bgColor = when {

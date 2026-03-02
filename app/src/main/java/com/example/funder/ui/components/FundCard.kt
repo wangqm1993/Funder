@@ -129,7 +129,7 @@ fun FundCardContent(
 
     val accentColor = when {
         growthRate > 0.001 -> ProfitRed
-        growthRate < -0.001 -> LossGreen
+        growthRate < -0.001 -> if (isDark) LossGreen else LossGreenOnLight
         else -> Neutral
     }
 
