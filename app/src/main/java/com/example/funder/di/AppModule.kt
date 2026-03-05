@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.funder.data.local.FundDao
 import com.example.funder.data.local.FundDatabase
+import com.example.funder.data.local.WatchlistDao
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -40,13 +41,15 @@ object AppModule {
             FundDatabase::class.java,
             "funder_database"
         )
-            .addMigrations(FundDatabase.MIGRATION_1_2)
+            .addMigrations(FundDatabase.MIGRATION_1_2, FundDatabase.MIGRATION_2_3)
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideFundDao(database: FundDatabase): FundDao {
-        return database.fundDao()
-    }
+    fun provideFundDao(database: FundDatabase): FundDao = database.fundDao()
+
+    @Provides
+    @Singleton
+    fun provideWatchlistDao(database: FundDatabase): WatchlistDao = database.watchlistDao()
 }

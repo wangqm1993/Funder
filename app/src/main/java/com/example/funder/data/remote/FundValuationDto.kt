@@ -13,6 +13,17 @@ data class FundValuationDto(
     @SerializedName("gztime") val estimateTime: String = ""
 )
 
+/** 行业板块行情快照。 */
+data class SectorDto(
+    val code: String,
+    val name: String,
+    val changePercent: Double,
+    val change: Double,
+    val fundCount: Int = 0        // 该板块关联基金数量
+) {
+    val isUp: Boolean get() = changePercent >= 0
+}
+
 /** 基金搜索结果。 */
 data class FundSearchResultDto(
     val code: String,

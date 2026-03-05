@@ -2,6 +2,8 @@ package com.example.funder.data.repository
 
 import com.example.funder.data.local.FundDao
 import com.example.funder.data.local.FundHoldingEntity
+import com.example.funder.data.local.WatchlistDao
+import com.example.funder.data.local.WatchlistEntity
 import com.example.funder.data.remote.FundApiService
 import com.example.funder.data.remote.FundDetailDto
 import com.example.funder.data.remote.FundSearchResultDto
@@ -9,6 +11,7 @@ import com.example.funder.data.remote.FundValuationDto
 import com.example.funder.data.remote.MarketIndexDto
 import com.example.funder.data.remote.NavHistoryItem
 import com.example.funder.data.remote.NewsDto
+import com.example.funder.data.remote.SectorDto
 import com.example.funder.data.remote.StockHolding
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -17,6 +20,7 @@ import javax.inject.Singleton
 @Singleton
 class FundRepository @Inject constructor(
     private val fundDao: FundDao,
+    private val watchlistDao: WatchlistDao,
     private val apiService: FundApiService
 ) {
     // ---- 本地持仓 ----
@@ -77,8 +81,20 @@ class FundRepository @Inject constructor(
     suspend fun getNews(page: Int = 1, pageSize: Int = 20): List<NewsDto> =
         apiService.getNews(page, pageSize)
 
+    // ---- 自选 ----
+
+    fun getAllWatchlist(): Flow<List<WatchlistEntity>> = watchlistDao.getAll()
+    suspend fun addToWatchlist(code: String, name: String) =
+        watchlistDao.insert(WatchlistEntity(code, name))
+    suspend fun removeFromWatchlist(code: String) = watchlistDao.delete(code)
+    suspend fun isInWatchlist(code: String) = watchlistDao.contains(code) > 0
+
     // ---- 大盘指数 ----
 
     suspend fun getMarketIndices(): List<MarketIndexDto> =
         apiService.getMarketIndices()
+
+    // ---- 板块行情 ----
+
+    suspend fun getSectors(): List<SectorDto> = apiService.getSectors()
 }

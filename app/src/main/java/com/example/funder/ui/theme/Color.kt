@@ -14,18 +14,18 @@ val Secondary = Color(0xFF7C4DFF)
 val SecondaryContainer = Color(0xFFEDE7F6)
 
 // 背景色
-val BackgroundLight = Color(0xFFF5F7FA)
-val BackgroundDark = Color(0xFF121212)
-val SurfaceLight = Color(0xFFFFFFFF)
-val SurfaceDark = Color(0xFF1E1E1E)
-val SurfaceVariantLight = Color(0xFFE7E0EC)
-val SurfaceVariantDark = Color(0xFF49454F)
+val BackgroundLight = Color(0xFFF4F6F9)
+val BackgroundDark  = Color(0xFF111318)
+val SurfaceLight    = Color(0xFFFFFFFF)
+val SurfaceDark     = Color(0xFF1C1E26)
+val SurfaceVariantLight = Color(0xFFEEEFF5)   // 中性浅灰，去除偏紫色调
+val SurfaceVariantDark  = Color(0xFF2A2D3A)
 
 // 暗黑模式专用
-val OnSurfaceVariantLight = Color(0xFF111111)
-val OnSurfaceVariantDark = Color(0xFFF0EEF2)
-val OutlineLight = Color(0xFF555555)
-val OutlineDark = Color(0xFFB0ACB6)
+val OnSurfaceVariantLight = Color(0xFF5C5C6E)   // 中灰蓝，区分主文字同时保持可读性
+val OnSurfaceVariantDark  = Color(0xFFB0AEC4)
+val OutlineLight = Color(0xFFD0D0D8)
+val OutlineDark  = Color(0xFF5A5870)
 
 // 股市颜色（中国惯例：红色=涨，绿色=跌）
 val ProfitRed = Color(0xFFFF3D00)        // 涨 - 亮红色

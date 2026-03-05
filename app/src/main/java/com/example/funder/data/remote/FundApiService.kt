@@ -714,4 +714,45 @@ class FundApiService @Inject constructor(
         }
         result
     }
+
+    /**
+     * 获取 A 股行业板块涨跌榜（东方财富）。
+     * 请求全量板块（约 97 个），客户端分拣涨/跌榜。
+     * f3=-/停牌时跳过，避免混入涨榜。
+     */
+    suspend fun getSectors(): List<SectorDto> = withContext(Dispatchers.IO) {
+        val result = mutableListOf<SectorDto>()
+        try {
+            val url = "https://push2.eastmoney.com/api/qt/clist/get" +
+                    "?pn=1&pz=100&po=1&np=2&fltt=2&invt=2&fid=f3" +
+                    "&fs=m:90+t:2&fields=f12,f14,f3,f4"
+            val request = Request.Builder().url(url)
+                .header("Referer", "https://data.eastmoney.com/")
+                .header("User-Agent", "Mozilla/5.0 (Linux; Android 13)")
+                .build()
+            val response = client.newCall(request).execute()
+            val body = response.body?.string() ?: return@withContext result
+            val json = gson.fromJson(body, Map::class.java)
+            val data = (json["data"] as? Map<*, *>) ?: return@withContext result
+            val diffRaw = data["diff"]
+            val items: List<*> = when (diffRaw) {
+                is List<*> -> diffRaw
+                is Map<*, *> -> diffRaw.values.toList()
+                else -> return@withContext result
+            }
+            for (item in items) {
+                val map = item as? Map<*, *> ?: continue
+                val code = map["f12"]?.toString() ?: continue
+                val name = map["f14"]?.toString() ?: continue
+                if (name == "-" || name.isBlank()) continue
+                val pct = map["f3"]?.toString()?.toDoubleOrNull() ?: continue
+                val chg = map["f4"]?.toString()?.toDoubleOrNull() ?: 0.0
+                result.add(SectorDto(code, name, pct, chg))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        result.sortByDescending { it.changePercent }
+        result
+    }
 }
